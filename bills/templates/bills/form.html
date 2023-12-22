@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="col-lg-8 offset-lg-2">
+
+    {% if bill_id %}
+    <div class="py-2">
+        Rechnungsnummer: <b>{{ bill_id }}</b>
+    </div>
+    {% endif %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.patient | as_crispy_field }}
+        <div class="row">
+            <div class="col">
+            {{ form.from_date | as_crispy_field }}
+            </div>
+            <div class="col">
+            {{ form.to_date | as_crispy_field }}
+            </div>
+        </div>
+        {{ form.current_date | as_crispy_field }}
+        <div class="py-2">
+            <button type="submit" class="btn btn-success btn-block">Speichern</button>
+            <a href="{% url "bills_list" %}" class="btn btn-secondary btn-block">Zurück</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load print_filter %}
+{% block content %}
+
+<div class="row align-items-center">
+    <div class="col-md-8">
+        <h2>Rechnungen</h2>
+    </div>
+    {% if hasQueue %}
+    <div align="right" class="col-md-4">
+        <a href="{% url "printer_print_queue" %}" class="btn btn-lg btn-primary my-2 printlink">
+            <i class="fas fa-print mx-1"></i> Warteschlange drucken
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+
+<table class="table">
+    <thead class="font-weight-bold align-middle">
+        <tr>
+            <td>Nr</td>
+            <td>Patient</td>
+            <td>von</td>
+            <td>bis</td>
+            <td>Datum</td>
+            <td align="right">Preis</td>
+            <td align="right">
+                <a href="{% url "bills_new" %}" class="btn btn-outline-success btn-sm">
+                    <i class="fas fa-plus"></i> Neu
+                </a>
+            </td>
+        </tr>
+    </thead>
+    <body>
+        {% for bill in bill_list %}
+        {% if bill|isInQueue %}
+        <tr class="align-middle table-primary">
+        {% elif bill.last_printed %}
+            {% if bill.last_printed > bill.last_updated %}
+            <tr class="align-middle table-secondary">
+            {% else %}
+            <tr class="align-middle table-danger">
+            {% endif %}
+        {% else %}
+            <tr class="align-middle">
+        {% endif %}
+            <td>{{bill.bill_id}}</td>
+            <td>{{bill.patient}}</td>
+            <td>{{bill.from_date}}</td>
+            <td>{{bill.to_date}}</td>
+            <td>{{bill.current_date}}</td>
+            <td align="right">{{ bill.total | floatformat:2 }}€</td>
+            <td align="right">
+                <div class="btn-group px-2">
+                    <a href="{% url "printer_bill" bill.id %}" class="btn btn-primary btn-sm printlink">
+                        <i class="fas fa-print mx-1"></i> Drucken
+                    </a>
+                    {% if bill|isInQueue %}
+                    <a href="{% url "printer_remove_queue" bill.id %}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-minus"></i>
+                    </a>
+                    {% else %}
+                    <a href="{% url "printer_add_queue" bill.id %}" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                    {% endif %}
+                </div>
+                <a href="{% url "bills_bill" bill.id %}" class="btn btn-link text-secondary px-1">
+                    <i class="fas fa-info-circle"></i>
+                </a>
+                <a href="{% url "bills_update" bill.id %}" class="btn btn-link text-secondary px-1">
+                    <i class="fas fa-edit"></i>
+                </a>
+                {% if bill|isInQueue %}
+                <a href="" class="btn btn-link px-0 disabled">
+                {% else %}
+                <a href="{% url "bills_delete" bill.id %}" class="btn btn-link px-0 text-secondary">
+                {% endif %}
+                    <i class="fa fa-trash"></i>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+
+        <tr class="table-success">
+            <td colspan="5">Gesamt</td>
+            <td align="right">{{ total | floatformat:2 }}€</td>
+            <td></td>
+        </tr>
+            
+    </body>
+</table>
+
+{% endblock %}

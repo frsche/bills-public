@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div align="center">
+    Soll <b>Rechnung Nr. {{ bill.id }} ({{ bill.patient }})</b> über {{ bill.total | floatformat:2 | default:"0,00" }}€ wirklich gelöscht werden?
+
+    <div>
+        <a href="{% url "bills_delete_yes" bill.id %}" class="btn btn-danger">Ja</a>
+        <a href="{% url "bills_list" %}" class="btn btn-success">Nein</a>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+\documentclass[11pt]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+\usepackage{eurosym}
+\DeclareUnicodeCharacter{20AC}{\euro}
+\usepackage[ngerman]{babel}
+\usepackage{lmodern}
+\usepackage{helvet}
+\usepackage{graphicx}
+\usepackage{lastpage}
+\usepackage[T1]{fontenc}
+\usepackage{longtable}
+\usepackage[left=2cm,right=2cm,top=1cm]{geometry}
+\usepackage{blindtext}
+
+\setlength{\parindent}{0pt}
+
+\renewcommand*\familydefault{\sfdefault}
+
+\begin{document}
+
+\begin{minipage}{0.5\linewidth}
+    % \includegraphics[height=2.7cm]{printer/templates/printer/header}
+\end{minipage}\hfill
+\begin{minipage}{0.4\linewidth}
+\begin{flushright}
+Vorname Nachname\\
+Straße Hausnummer\\
+PLZ Ort\\
+Telefonnummer
+\end{flushright}
+\end{minipage}
+\vspace{7mm}
+
+\begin{center}
+\Large Übersicht\\[2mm]
+\large {{ title }}
+\end{center}
+\vspace{5mm}
+
+\centering
+\begin{longtable}{l p{8cm} l r}
+Rechnungsnr. & Patient & Ausstellungsdatum & Preis\\\hline
+{% for bill in bills %}
+{{ bill.bill_id }} & {{ bill.patient.first_name }} {{ bill.patient.last_name }} & {{ bill.current_date|date:"SHORT_DATE_FORMAT"}} & {{ bill.total | floatformat:2 }}\euro \\
+{% endfor %}\hline
+\multicolumn{3}{l}{\textbf{Gesamt}} & \textbf{ {{ total | floatformat:2 }}€ }\\
+\end{longtable}
+
+\end{document}

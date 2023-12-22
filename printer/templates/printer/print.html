@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<form id="print_form" method="post" class="col-md-8 offset-md-2">
+{% csrf_token %}
+
+<h2>Drucken</h2>
+
+<div class="d-flex flex-row align-items-center py-2">
+    <div class="col-md-2">
+    {{ form.print_mode.0 }}
+    </div>
+    <div class="flex-fill">
+    {{ form.year_select | as_crispy_field }}
+    </div>
+</div>
+
+<div class="d-flex flex-row align-items-center py-2">
+    <div class="col-md-2">
+    {{ form.print_mode.1 }}
+    </div>
+    <div class="flex-fill">
+    {{ form.time_from | as_crispy_field }}
+    </div>
+    <div class="px-2">bis</div>
+    <div class="flex-fill">
+    {{ form.time_to | as_crispy_field }}
+    </div>
+</div>
+
+<div class="d-flex flex-row align-items-center py-2">
+    <div class="col-md-2">
+    {{ form.print_mode.2 }}
+    </div>
+    <div class="flex-fill">
+    {{ form.bill_id_from | as_crispy_field }}
+    </div>
+    <div class="px-2">bis</div>
+    <div class="flex-fill">
+    {{ form.bill_id_to | as_crispy_field }}
+    </div>
+</div>
+
+<div class="d-flex flex-row align-items-center py-2">
+    <div class="col-md-2">
+    {{ form.print_mode.3 }}
+    </div>
+    <div class="flex-fill">
+    {{ form.patient_select | as_crispy_field }}
+    </div>
+</div>
+
+<div class="py-2">
+    {{ form.print_mode.4 }}
+</div>
+
+<div class="py-2">
+    <button class="btn btn-primary" name="btn-print">
+        <i class="fas fa-file-invoice-dollar px-1"></i> Rechnungen
+    </button>
+    <button class="btn btn-secondary mx-2" name="btn-list">
+        <i class="fas fa-list px-1"></i> Übersicht
+    </button>
+</div>
+
+</div>
+
+<script>
+    $(document).ready(function(){
+        $(".form-control").prop("disabled", true);
+        $(".year-control").prop("disabled", false);
+        $("#id_print_mode_0").click()
+
+        $("#id_print_mode_0").click(function(){
+            $(".form-control").prop("disabled", true);
+            $(".year-control").prop("disabled", false);
+        });
+        $("#id_print_mode_1").click(function(){
+            $(".form-control").prop("disabled", true);
+            $(".time-control").prop("disabled", false);
+        });
+        $("#id_print_mode_2").click(function(){
+            $(".form-control").prop("disabled", true);
+            $(".bill-control").prop("disabled", false);
+        });
+        $("#id_print_mode_3").click(function(){
+            $(".form-control").prop("disabled", true);
+            $(".patient-control").prop("disabled", false);
+        });
+        $("#id_print_mode_4").click(function(){
+            $(".form-control").prop("disabled", true);
+            $(".sql-control").prop("disabled", false);
+        });
+    })
+</script>
+
+{% endblock %}

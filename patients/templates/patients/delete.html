@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div align="center">
+
+    Soll <b>{{ patient.first_name }} {{ patient.last_name }}</b> wirklich gelöscht werden?
+
+    <div class=p-3>
+        <a href="{% url "patients_delete_yes" patient.id %}" class="btn btn-danger">Ja</a>
+        <a href="{% url "patients_list" %}" class="btn btn-success">Nein</a>
+    </div>
+
+</div>
+
+{% endblock %}

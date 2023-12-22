@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="col-lg-8 offset-lg-2">
+<h2>Rechnung</h2>
+<p>Nr. <b>{{ bill.bill_id }}</b></p>
+
+<div class=py-2>
+    <b>für</b>
+    <div class=px-4>
+    {{ bill.patient.greeting }}<br>
+    {{ bill.patient.first_name }} {{ bill.patient.last_name }}<br>
+    {{ bill.patient.street }} {{ bill.patient.street_nr }}<br>
+    {{ bill.patient.plz }} {{ bill.patient.place }}<br>
+    </div>
+</div>
+
+<table>
+    <tr>
+        <td><b>Behandlungszeitraum:</b></td>
+        <td class="px-2">{{bill.from_date|date:"SHORT_DATE_FORMAT"}} bis {{bill.to_date|date:"SHORT_DATE_FORMAT"}}</td>
+    </tr>
+    <tr>
+        <td><b>Ausstellungsdatum:</b></td>
+        <td class="px-2">{{bill.current_date|date:"SHORT_DATE_FORMAT"}}</td>
+    </tr>
+</table>
+
+<div class="py-3">
+<h4>Behandlungen</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <td>Anzahl</td>
+            <td>Art</td>
+            <td align="right">Einzelpreis</td>
+            <td align="right">Gesamtpreis</td>
+            <td></td>
+        </tr>
+    </thead>
+    <body>
+        {% for order in orders %}
+        <tr class="align-middle">
+            <td>{{ order.amount }}</td>
+            <td>{{ order.name }}</td>
+            <td align="right">{{ order.price }}€</td>
+            <td align="right">{{ order.total }}€</td>
+            <td align="right">
+                <a href="{% url "bills_order_delete" order.id %}" class="btn btn-link text-secondary">
+                    <i class="fa fa-trash"></i>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+        <tr class="table-success">
+            <td colspan="3">Gesamt</td>
+            <td align="right">{{ bill.total | floatformat:2 }}€</td>
+            <td></td>
+        </tr>
+    </body>
+</table>
+
+<div class="row align-items-center">
+    <div class="col-lg-7">
+        <a href="{% url "printer_bill" bill.id %}" class="btn btn-primary printlink">
+            <i class="fas fa-print mx-1"></i> Drucken
+        </a>
+        <a href="{% url "printer_add_queue" bill.id %}" class="btn btn-success">
+            <i class="fas fa-plus mx-1"></i> Warteschlange hinzufügen
+        </a>
+        <a href="{% url "bills_list" %}" class="btn btn-secondary">Zurück</a>
+    </div>
+    <div align="right" class="col-lg-5">
+        <table>
+        {% if bill.last_printed %}
+        <tr>
+            <td>Zuletzt gedruckt:</td>
+            <td class=px-2>{{ bill.last_printed}}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td>Zuletzt aktualisiert:</td>
+            <td class=px-2>{{ bill.last_updated }}</td>
+        </tr>
+        </table>
+    </div>
+</div>
+
+</div>
+
+<h4>Behandlung hinzufügen</h4>
+<form method="post">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-2">
+            {{ order_form.amount | as_crispy_field }}
+        </div>
+        <div class="col-md-9">
+            {{ order_form.order | as_crispy_field }}
+        </div>
+        <div class="col-md-1 align-self-end">
+            <button type="submit" class="btn btn-success btn-block"><i class="fas fa-plus"></i></button>
+        </div>
+    </div>
+</form>
+</div>
+{% endblock %}

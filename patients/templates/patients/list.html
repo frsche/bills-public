@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load patient_filter %}
+{% block content %}
+
+{% if search_term %}
+<h2>
+    Patienten: "{{ search_term }}"
+    <a href="{% url "patients_list" %}" class="btn btn-link">Alle anzeigen</a>
+</h2>
+{% else %}
+<h2>Patienten</h2>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="d-flex">
+        <div class="flex-grow-1">
+            {{ search_form.search | as_crispy_field }}
+        </div>
+        <div class="px-2">
+            <button class="btn btn-primary">
+                <i class="fas fa-search"></i> Suchen
+            </button>
+        </div>
+    </div>
+</form>
+
+<table class="table">
+    <thead class="font-weight-bold align-middle">
+        <tr>
+            <td>Anrede</td>
+            <td>Vorname</td>
+            <td>Nachname</td>
+            <td>Straße</td>
+            <td>Nr.</td>
+            <td>PLZ</td>
+            <td>Ort</td>
+            <td align="right">
+                <a href="{% url "patients_insert" %}" class="btn btn-outline-success btn-sm">
+                    <i class="fas fa-plus"></i> Neu
+                </a>
+            </td>
+        </tr>
+    </thead>
+    <body>
+        {% for patient in patient_list %}
+        <tr class="align-middle">
+            <td>{{patient.greeting}}</td>
+            <td>{{patient.first_name}}</td>
+            <td>{{patient.last_name}}</td>
+            <td>{{patient.street}}</td>
+            <td>{{patient.street_nr}}</td>
+            <td>{{patient.plz}}</td>
+            <td>{{patient.place}}</td>
+            <td align="right">
+                <a href="{% url "bills_new" %}?patient={{patient.id}}" class="btn btn-primary btn-sm mx-2">
+                    <i class="fas fa-file-alt mx-1"></i> Rechnung
+                </a>
+                <a href="{% url "patients_update" patient.id %}" class="btn btn-link text-secondary pr-0">
+                    <i class="fas fa-edit"></i>
+                </a>
+                {% if patient|hasBills %}
+                <a href="" class="btn btn-link px-0 disabled">
+                {% else %}
+                <a href="{% url "patients_delete" patient.id %}" class="btn btn-link px-0 text-secondary">
+                {% endif %}
+                    <i class="fa fa-trash"></i>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+            
+    </body>
+</table>
+
+{% endblock %}

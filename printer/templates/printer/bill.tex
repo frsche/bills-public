@@ -1,0 +1,99 @@
+{% load print_filter %}
+{% load patient_filter %}
+
+\documentclass[
+  fromphone=true,
+  % fromemail=true
+]{scrlttr2}
+
+\KOMAoptions{
+  fontsize=12pt,
+  parskip=full,
+  fromalign=right,
+  backaddress=plain,
+  pagenumber=right,
+  addrfield=alignedtop,
+  fromlogo=on,
+  foldmarks=mTbP
+}
+
+\usepackage[utf8]{inputenc}
+\usepackage{eurosym}
+\DeclareUnicodeCharacter{20AC}{\euro}
+\usepackage[ngerman]{babel}
+\usepackage{lmodern}
+\usepackage{pdfpages}
+\usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage{ifthen}
+\usepackage{tikz}
+\usepackage{helvet}
+\usepackage{lastpage}
+\usepackage[T1]{fontenc}
+\usepackage{tabularx}
+
+\renewcommand*\familydefault{\sfdefault}
+\setkomavar{backaddressseparator}{ - }
+\setplength{locvpos}{7cm}
+\setplength{lochpos}{3cm}
+\setplength{firstfootvpos}{27.7cm}
+% \setplength{sigbeforevskip}{1.5cm}
+\def\arraystretch{1.5}
+\setplength{foldmarkthickness}{0.4pt}
+\setplength{tfoldmarklength}{4mm}
+
+\setkomavar{fromname}{Vorname Nachname}
+\setkomavar{fromaddress}{Straßenname 1\\12345 Ortsname}
+\setkomavar{fromphone}{12345/1234567}
+\setkomavar{fromemail}{nachname@email.de}
+
+% \setkomavar{fromlogo}{\includegraphics[height=2.7cm]{printer/templates/printer/header}}
+\setkomavar{location}{
+  Steuernummer: XXXXXXXX
+}
+\setkomavar{firstfoot}{\centering
+Bitte überweisen Sie o.g. Betrag auf mein Konto der XXXXXXXXXXXXX:\\[1.5mm]
+\textbf{IBAN: XXXXXXXXXXXXXXXXXXXXXXX}
+}
+
+\setkomavar{place}{Ortsname}
+
+\setkomavar{subject}{Rechnung}
+
+\begin{document}
+
+{% for bill in bills %}
+
+\setkomavar{date}{ {{ bill.current_date }} }
+\setkomavar{title}{}
+\setkomavar{invoice}{ {{ bill.bill_id }} }
+
+
+\begin{letter}{\vspace{15mm}
+  {{ bill.patient.greeting }}\\
+  {{ bill.patient.first_name }} {{ bill.patient.last_name }}\\
+  {{ bill.patient.street }} {{ bill.patient.street_nr }}\\
+  {{ bill.patient.plz }} {{ bill.patient.place }}
+}
+
+\opening{ {{ bill.patient | getOpening }} }
+
+für erbrachte Behandlungsleistungen im Zeitraum vom {{ bill.from_date | date:"SHORT_DATE_FORMAT" }} bis zum {{ bill.to_date | date:"SHORT_DATE_FORMAT" }} erlaube ich mir zu berechnen:
+
+\begin{tabularx}{\linewidth}{lXrr}
+Anzahl & Behandlung & Einzelpreis & Gesamtpreis\\\hline
+{% for order in bill|getOrders %}
+{{order.amount}} & {{order.name}} & {{order.price}}\euro & {{order.total}}\euro\\
+{% endfor %}
+\hline
+\multicolumn{3}{l}{\textbf{Gesamt}} & \textbf{ {{ bill.total | floatformat:2 }}€ }\\
+\end{tabularx}
+
+\vspace{1cm}
+\closing{Mit freundlichen Grüßen}
+
+\end{letter}
+
+{% endfor %}
+
+\end{document}
